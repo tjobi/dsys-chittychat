@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package grpcBrr;
+
+option go_package = "proto/proto";
+
+service TimeAskService {
+    rpc GetTime(AskForTimeMsg) returns (TimeMsg);
+}
+
+message AskForTimeMsg {
+    int64 clientId = 1;   
+}
+
+message TimeMsg {
+    string time = 1;
+    string serverName = 2;
+}
