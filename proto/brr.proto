@@ -4,15 +4,27 @@ package grpcBrr;
 
 option go_package = "proto/proto";
 
-service TimeAskService {
-    rpc GetTime(AskForTimeMsg) returns (TimeMsg);
+service ChittyChat {
+    rpc JoinRoom(ClientJoin) returns (ServerWelcome);
+    rpc SendMessage(stream ChatMessage ) returns (stream ServerReponse);
 }
 
-message AskForTimeMsg {
-    int64 clientId = 1;   
+message ChatMessage {
+    string msg = 1;
+    int32 clientId = 2;
+    repeated int32 timestamp = 3;  
 }
 
-message TimeMsg {
-    string time = 1;
-    string serverName = 2;
+message ServerReponse {
+    repeated int32 timestamp = 1;
+    string msg = 2;
+}
+
+message ServerWelcome{
+    repeated int32 vClock = 1;
+    int32 id = 2;
+}
+
+message ClientJoin{
+    string clientName = 1;
 }

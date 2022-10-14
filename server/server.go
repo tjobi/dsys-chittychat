@@ -13,13 +13,19 @@ import (
 )
 
 type Server struct {
-	gRPC.UnimplementedTimeAskServiceServer
+	gRPC.UnimplementedChittyChatServer
 	name string
 	port int
 }
 
-// to allow falgs in console go run server/server.go -port ?
-var port = flag.Int("port", 8080, "server port number")
+var (
+	// to allow falgs in console go run server/server.go -port ?
+	port    = flag.Int("port", 8080, "server port number")
+	streams []gRPC.ChittyChat_SendMessageServer
+
+	lastId int
+	serverVClock []int32
+)
 
 func main() {
 	flag.Parse()
@@ -29,9 +35,12 @@ func main() {
 		port: *port,
 	}
 
+	streams = make([]gRPC.ChittyChat_SendMessageServer, 0)
+
 	go StartServer(server)
 
 	for {
+		time.Sleep(5 * time.Second)
 	}
 }
 
@@ -46,7 +55,7 @@ func StartServer(server *Server) {
 
 	log.Printf("Server %s started, listening on port %d\n", server.name, server.port)
 
-	gRPC.RegisterTimeAskServiceServer(gRPCServer, server)
+	gRPC.RegisterChittyChatServer(gRPCServer, server)
 
 	serverErr := gRPCServer.Serve(listener)
 	if serverErr != nil {
@@ -54,11 +63,58 @@ func StartServer(server *Server) {
 	}
 }
 
-func (c *Server) GetTime(ctx context.Context, in *gRPC.AskForTimeMsg) (*gRPC.TimeMsg, error) {
-	log.Printf("Client with ID %d asked for time\n", in.ClientId)
+func (c *Server) SendMessage(stream gRPC.ChittyChat_SendMessageServer) error {
+	streams = append(streams, stream)
+	log.Printf("Length of streams slice: %d\n", cap(streams))
+	for {
+		clientIn, err := stream.Recv()
 
-	return &gRPC.TimeMsg{
-		Time:       time.Now().String(),
-		ServerName: c.name,
+		if err != nil {
+			log.Printf("whoops\n")
+			return err
+		}
+		log.Printf("Server recieved %s with timestamp: %v", clientIn.Msg, clientIn.Timestamp)
+
+		var sendErr error
+		for i, s := range streams {
+			deadStream := s.Send(&gRPC.ServerReponse{
+				Msg:       clientIn.Msg,
+				Timestamp: clientIn.Timestamp,
+			})
+			if deadStream != nil {
+				streams = removeClientStream(streams, i)
+			}
+		}
+
+		if sendErr != nil {
+			return sendErr
+		}
+
+	}
+}
+
+func removeClientStream(s []gRPC.ChittyChat_SendMessageServer, i int) []gRPC.ChittyChat_SendMessageServer {
+	s[i] = s[len(s)-1]
+	new := s[:len(s)-1]
+	return new
+}
+
+func (c *Server) JoinRoom(ctx context.Context, in *gRPC.ClientJoin) (*gRPC.ServerWelcome, error) {
+	//vClock = append(vClock, 0)
+	//fresh slice for new client
+	VClock := make([]int32, lastId + 1)
+	lastId += 1;
+
+	for _, s := range streams {
+		s.Send(&gRPC.ServerReponse{
+			Timestamp: serverVClock,
+			Msg: fmt.Sprintf("Client with id: %d, and name: %s", lastId, in.ClientName),
+		})
+	}
+
+	return &gRPC.ServerWelcome{
+		VClock: VClock,
+		Id: int32(lastId-1),
 	}, nil
+
 }
