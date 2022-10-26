@@ -7,6 +7,7 @@ option go_package = "proto/proto";
 service ChittyChat {
     rpc JoinRoom(ClientJoin) returns (ServerWelcome);
     rpc SendMessage(stream ChatMessage ) returns (stream ServerReponse);
+    rpc LeaveRoom(ClientLeave) returns (ServerBye);
 }
 
 message ChatMessage {
@@ -27,4 +28,14 @@ message ServerWelcome{
 
 message ClientJoin{
     string clientName = 1;
+}
+
+message ClientLeave{
+    int32 clientId = 1;
+    repeated int32 timestamp = 2;
+    string clientName = 3;
+}
+
+message ServerBye{
+    string msg = 1;
 }

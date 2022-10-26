@@ -1,0 +1,53 @@
+2022/10/26 14:41:25 Server server1 started, listening on port 8080
+2022/10/26 14:41:41 ClientClock: [1 0], Client 1 JOINED
+2022/10/26 14:41:51 ClientClock: [1 1], Client 1 PUBLISH: "It is certainly lonely here :eyes:"
+2022/10/26 14:41:51 ServerClock after publish: [3 1]
+2022/10/26 14:41:59 ClientClock: [1 2], Client 1 PUBLISH: "Wish I had some friends"
+2022/10/26 14:41:59 ServerClock after publish: [5 2]
+2022/10/26 14:42:04 ClientClock: [6 2 0], Client 2 JOINED
+2022/10/26 14:42:12 ClientClock: [6 2 1], Client 2 PUBLISH: "Fear not!"
+2022/10/26 14:42:12 ServerClock after publish: [8 2 1]
+2022/10/26 14:42:18 ClientClock: [9 2 1 0], Client 3 JOINED
+2022/10/26 14:43:12 ClientClock: [9 2 1 1], Client 3 PUBLISH: "What's up everybody?"
+2022/10/26 14:43:12 ServerClock after publish: [11 2 1 1]
+2022/10/26 14:43:34 ClientClock: [10 2 4 1], Client 2 PUBLISH: "Who is receiving your votes at the upcoming election?"
+2022/10/26 14:43:34 ServerClock after publish: [13 2 4 1]
+2022/10/26 14:43:59 ClientClock: [12 8 4 1], Client 1 PUBLISH: "#¤!"#?, politics! I am out! :poop_emoji:"
+2022/10/26 14:43:59 ServerClock after publish: [15 8 4 1]
+2022/10/26 14:44:01 ClientClock: [12 10 4 1], Client 1 LEFT
+2022/10/26 14:44:01 Client disconnected
+2022/10/26 14:44:26 ClientClock: [16 10 4 5], Client 3 PUBLISH: "Whatever, I cared for Jimmy"
+2022/10/26 14:44:26 ServerClock after publish: [19 10 4 5]
+2022/10/26 14:44:48 ClientClock: [18 10 8 5], Client 2 PUBLISH: "Sooo??"
+2022/10/26 14:44:48 ServerClock after publish: [21 10 8 5]
+2022/10/26 14:44:49 ClientClock: [18 10 10 5], Client 2 LEFT
+2022/10/26 14:44:49 Client disconnected
+2022/10/26 14:44:54 ClientClock: [22 10 10 8], Client 3 PUBLISH: "ouch"
+2022/10/26 14:44:54 ServerClock after publish: [25 10 10 8]
+2022/10/26 14:44:55 ClientClock: [22 10 10 10], Client 3 LEFT
+2022/10/26 14:44:55 Client disconnected
+
+
+3 Client before any publishes!
+
+2022/10/26 14:49:49 Server server1 started, listening on port 8080
+2022/10/26 14:49:58 ClientClock: [1 0], Client 1 JOINED
+2022/10/26 14:50:03 ClientClock: [2 0 0], Client 2 JOINED
+2022/10/26 14:50:07 ClientClock: [3 0 0 0], Client 3 JOINED
+2022/10/26 14:50:13 ClientClock: [3 3 0 0], Client 1 PUBLISH: "Now"
+2022/10/26 14:50:13 ServerClock after publish: [5 3 0 0]
+2022/10/26 14:50:18 ClientClock: [4 3 0 2], Client 3 PUBLISH: "we are"
+2022/10/26 14:50:18 ServerClock after publish: [7 3 0 2]
+2022/10/26 14:50:24 ClientClock: [6 3 4 2], Client 2 PUBLISH: "all chilling from the get-go"
+2022/10/26 14:50:24 ServerClock after publish: [9 3 4 2]
+2022/10/26 14:51:03 ClientClock: [10 3 4 2 0], Client 4 JOINED
+2022/10/26 14:51:07 ClientClock: [10 3 4 2 1], Client 4 PUBLISH: "What up gutters"
+2022/10/26 14:51:07 ServerClock after publish: [12 3 4 2 1]
+2022/10/26 14:51:21 ClientClock: [10 3 4 2 3], Client 4 LEFT
+2022/10/26 14:51:21 Client disconnected
+2022/10/26 14:51:27 ClientClock: [13 10 4 2 3], Client 1 LEFT
+2022/10/26 14:51:27 Client disconnected
+2022/10/26 14:51:34 ClientClock: [15 10 4 8 3], Client 3 PUBLISH: "unfortunate"
+2022/10/26 14:51:34 ServerClock after publish: [18 10 4 8 3]
+2022/10/26 14:51:36 ClientClock: [15 10 4 10 3], Client 3 LEFT
+2022/10/26 14:51:36 Client disconnected

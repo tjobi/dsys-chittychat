@@ -64,37 +64,53 @@ func startClient(client *Client) {
 	}
 	client.id = int(welcome.Id)
 	vClock = welcome.VClock
+	fmt.Println("joined, ", client.id)
 
 	scanner := bufio.NewScanner(os.Stdin)
+
+	didExit := false
 
 	// goroutine that only listens
 	go func() {
 		for {
 			in, err := stream.Recv()
 
+			if didExit {
+				log.Println("You succesfully disconnected.")
+				return
+			}
+
 			if err == io.EOF {
 				log.Println("Stream ended")
 			}
 
 			if err != nil {
-				log.Fatal("ded")
+				log.Fatal("Something went wrong, you have been disconnected.")
 			}
 
-			if vClock == nil {
+			if vClock != nil {
 				vClock[client.id] += 1
 			}
 			MergeVClock(in.Timestamp)
 
-			log.Printf("Client received msg: %s, at timestamp: %v\n", in.Msg, in.Timestamp)
+			log.Printf("%s received msg: %s, at timestamp: %d\n", *name, in.Msg, vClock)
 		}
 	}()
 
 	for scanner.Scan() {
 		input := scanner.Text()
 
-		log.Printf("Client: %d input %s\n", client.id, input)
-
-		vClock[client.id] += 1
+		if input == "-exit" {
+			vClock[client.id] += 1
+			conn.LeaveRoom(context.Background(), &gRPC.ClientLeave{
+				ClientId:   int32(client.id),
+				Timestamp:  vClock,
+				ClientName: *name,
+			})
+			stream.CloseSend()
+			didExit = true
+			return
+		}
 
 		msgToSend := &gRPC.ChatMessage{
 			Msg:       input,
@@ -104,15 +120,12 @@ func startClient(client *Client) {
 
 		err := stream.Send(msgToSend)
 
-		//timemsg, err := conn.SendMessage(context.Background())
-
 		if err != nil {
 			log.Printf("Could not get time\n")
 		}
 
-		log.Printf("Client send: %s\n", msgToSend.Msg)
-
-		//log.Printf("Server[%s] says that the time is %s\n", timemsg.ServerName, timemsg.Time)
+		vClock[client.id] += 1
+		log.Printf("%s send: %s, at timestamp: %d\n", *name, msgToSend.Msg, vClock)
 	}
 }
 
@@ -136,7 +149,7 @@ func MergeVClock(serverClock []int32) {
 		}
 	}
 
-	for i, _ := range serverClock {
+	for i := range serverClock {
 		vClock[i] = int32(math.Max(float64(vClock[i]), float64(serverClock[i])))
 	}
 }
